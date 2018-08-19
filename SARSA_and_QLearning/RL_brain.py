@@ -32,7 +32,7 @@ class RL_SARSA(object):
             s = _s;
             a = _a;
             self.agent.environment.updateCounts_sa[s][a] += 0.005;
-            self.alpha = self.alpha * self.agent.environment.updateCounts_sa[s][a];
+            self.alpha = self.alpha / self.agent.environment.updateCounts_sa[s][a];
                 
     def Process(self, initState = None):
         for _e in range(self.noOfEpisodes):
