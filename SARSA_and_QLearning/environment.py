@@ -18,6 +18,7 @@ class RL_Environment(object):
         # Q is is a dict which corresponds to Q[s][a] = value;
         self.model = model;
         self.stateSpace, self.actionSpace, self.Q = self.model.getAllStates();
+        self.statesVisited = [];
         self.updateCounts = {};
         self.updateCounts_sa = {};
         for state in self.stateSpace:
@@ -36,6 +37,8 @@ class RL_Environment(object):
                     s += "\t\t"+str(self.model.Value(r,c));
                 elif self.model.isObstacle(r,c):
                     s += "\t\tX";
+                elif (r,c) not in self.statesVisited:
+                    s += "\t\t*";
                 else:
                     best_action = None;
                     best_val = None;

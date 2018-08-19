@@ -27,6 +27,7 @@ class RL_SARSA(object):
             SARSA_states = (s,a,r,_s,_a);
             if _a is not None : # if not terminal
                 self.agent.environment.Q[s][a] += self.alpha * (r + self.gamma * self.agent.environment.Q[_s][_a] - self.agent.environment.Q[s][a]);
+                self.agent.environment.statesVisited.append(s);                
             else:
                 break;                
             s = _s;
@@ -69,6 +70,7 @@ class RL_QLearning(object):
             SARSA_states = (s,a,r,_s,_a);
             if _a is not None : # if not terminal
                 self.agent.environment.Q[s][a] += self.alpha * (r + self.gamma * self.agent.environment.Q[_s][max_a] - self.agent.environment.Q[s][a]);
+                self.agent.environment.statesVisited.append(s);
             else:
                 break;                
             s = _s;
