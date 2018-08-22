@@ -7,25 +7,30 @@ def main():
     problem(RL_brain.RL_SARSA);
     print "Using Q-Learning";
     problem(RL_brain.RL_QLearning);
-
+    print "Using Double Q-Learning";
+    problem(RL_brain.RL_Double_QLearning);
 
 def problem(learningClass):
     g = env.GridWorld(  
                     4, 4,
                     init_number = -0.10,
                     obstacles = [(3,2),(1,2)],
-                    rewards = [(0,0,1),(0,3,10),(1,3,-1)]
+                    rewards = [(0,0,1),(0,3,100),(1,3,-1)]
                     );
     e = env.RL_Environment(g);
     a = agent.Agent(e);
 
     brain = learningClass(  
                         a, 
-                        noOfEpisodes = 200, 
+                        noOfEpisodes = 10, 
                         epsilon = 0.5, 
-                        epsilon_decay = 10.0/5000.0
+                        epsilon_decay = 1e-5
                         );
-    brain.Process(showPolicyAfterEachBatch = False);
+    brain.Process(
+        initState = None,
+        showPolicyAfterEachBatch = False,
+        showEpisodeNumberOfEpisodesElapsed = True
+        );
     print "Final Policy"
     print e.getPolicy();
 
