@@ -123,9 +123,19 @@ class RL_QLearning(RL_Brain):
             a = _a;
             self.agent.environment.updateCounts_sa[s][a] += self.alpha_decay;
             self.alpha = self.alpha / self.agent.environment.updateCounts_sa[s][a];
-                
+#######################################################################
 
 class RL_Double_QLearning(RL_Brain):
+    '''
+        This class implements the Double Q Learning approach.
+        There are two Q value functions. With a probability of
+        i = 0.5. One of the value function is updated on the basis
+        of the next action of the other value function.
+        The equation that is followed is:
+
+        Q[i](s,a) = Q[i](s,a) + alpha * (r + gamma * Q[i-1](s`,a`) - Q[i](s,a))
+    '''
+    
     def __init__(self,
                 agent,
                 gamma = 0.9,
