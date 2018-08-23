@@ -9,6 +9,10 @@ def main():
     problem(RL_brain.RL_QLearning);
     print "Using Double Q-Learning";
     problem(RL_brain.RL_Double_QLearning);
+    print "Using SARSA Lambda";
+    problem(RL_brain.RL_SARSA_Lambda);
+
+
 
 def problem(learningClass):
     g = env.GridWorld(  
@@ -22,7 +26,7 @@ def problem(learningClass):
 
     brain = learningClass(  
                         a, 
-                        noOfEpisodes = 10, 
+                        noOfEpisodes = 50, 
                         epsilon = 0.5, 
                         epsilon_decay = 1e-5
                         );
@@ -34,4 +38,6 @@ def problem(learningClass):
     print "Final Policy"
     print e.getPolicy();
 
-main();
+
+if __name__ == "__main__":
+    main();

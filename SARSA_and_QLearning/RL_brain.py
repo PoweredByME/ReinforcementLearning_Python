@@ -15,6 +15,11 @@ class RL_Brain(object):
                 stepsPerEpisode = 50, 
                 noOfEpisodes = 2000
                 ):
+        if gamma > 1.0: raise Exception("The value of gamma cannot be greater than or equal to 1.0");
+        if alpha > 1.0: raise Exception("The value of alpha cannot be greater than or equal to 1.0");
+        if epsilon > 1.0: raise Exception("The value of epsilon cannot be greater than or equal to 1.0");
+        if alpha_decay > 1.0: raise Exception("The value of alpha_decay cannot be greater than or equal to 1.0");
+        if epsilon_decay > 1.0: raise Exception("The value of epsilon_decay cannot be greater than or equal to 1.0");
         self.agent = agent;
         self.stepsPerEpisode = stepsPerEpisode;
         self.noOfEpisodes = noOfEpisodes;
@@ -190,3 +195,92 @@ class RL_Double_QLearning(RL_Brain):
             a = _a;
             self.agent.environment.updateCounts_sa[s][a] += self.alpha_decay;
             self.alpha = self.alpha / self.agent.environment.updateCounts_sa[s][a];
+#######################################################################
+
+class RL_SARSA_Lambda(RL_Brain):
+    '''
+        This is the implementation of the extended SARSA.
+    '''
+    def __init__(self,
+                agent,
+                gamma = 0.9,
+                alpha = 0.1, 
+                epsilon = 0.1, 
+                alpha_decay = 0.1, 
+                epsilon_decay = 0.1, 
+                stepsPerEpisode = 50, 
+                noOfEpisodes = 2000,
+                methodToUse = 1,        
+                eligibility_decay = 0.9
+        ):
+
+        super(RL_SARSA_Lambda, self).__init__(
+            agent = agent,
+            gamma = gamma,
+            alpha = alpha,
+            epsilon = epsilon,
+            alpha_decay = alpha_decay,
+            epsilon_decay = epsilon_decay,
+            stepsPerEpisode = stepsPerEpisode,
+            noOfEpisodes = noOfEpisodes
+        )
+        if methodToUse not in range(1,3): raise Exception("The method for SARSA lambda can only be either 1 or 2");
+        if eligibility_decay > 1: raise Exception("The eligibilty_decay cannot be greater that or equal to 1.0");
+
+        self.methodToUse = methodToUse; # either 1 or 2 
+                                        # if 1 then use the non-normalized method
+                                        # if 2 then use the normalized method
+        self.eligibility_decay = eligibility_decay; # the value via which the eligibility decreases (Lambda)
+        self.E = {};    # The eligibility trace
+        for s in self.agent.environment.stateSpace:
+            self.E[s] = {};
+            for a in self.agent.environment.actionSpace:
+                if a in self.agent.environment.Q[s]:
+                    self.E[s][a] = 1.0;
+        
+
+    def incrementEligibilityTrace(self, s, a):
+        if self.methodToUse == 1:
+            self.E[s][a] += 1;
+        if self.methodToUse == 2:
+            for _a in self.agent.environment.actionSpace:
+                if _a in self.E[s]:
+                    self.E[s][_a] = 0;
+            self.E[s][a] = 1;
+
+    def updateEligibilityTraceAndQ(self, delta):
+        for s in self.agent.environment.stateSpace:
+            for a in self.agent.environment.actionSpace:
+                if a in self.agent.environment.Q[s]:
+                    self.agent.environment.Q[s][a] += self.alpha * delta * self.E[s][a];
+                    self.E[s][a] *= self.eligibility_decay * self.gamma;
+
+    def takeStepsInEpisode(self, initState):
+        if initState is not None:
+            self.agent.setState(initState[0], initState[1]);
+        else:
+            self.agent.randomizeState();
+        s = self.agent.currentState();
+        (a, loc, r) = self.agent.getAction(self.epsilon);
+        for _steps in range(0,self.stepsPerEpisode):
+            if self.agent.isGameOver(): break;
+            if loc is None: break;
+            (_s, r) = self.agent.setState(loc[0], loc[1]);
+            if r is None: 
+                r = self.agent.environment.model.Value(loc[0],loc[1]); # if terminal
+            (_a, loc, _r) = self.agent.getAction(self.epsilon);
+            SARSA_states = (s,a,r,_s,_a);
+            if _a is not None : # if not terminal
+                delta = r + self.gamma * self.agent.environment.Q[_s][_a] - self.agent.environment.Q[s][a];
+                self.incrementEligibilityTrace(s,a);
+                self.updateEligibilityTraceAndQ(delta);
+                #self.agent.environment.Q[s][a] += self.alpha * (r + self.gamma * self.agent.environment.Q[_s][_a] - self.agent.environment.Q[s][a]);
+                self.agent.environment.statesVisited.append(s);                
+            else:
+                break;                
+            s = _s;
+            a = _a;
+            self.agent.environment.updateCounts_sa[s][a] += self.alpha_decay;
+            self.alpha = self.alpha / self.agent.environment.updateCounts_sa[s][a];
+#######################################################################
+
