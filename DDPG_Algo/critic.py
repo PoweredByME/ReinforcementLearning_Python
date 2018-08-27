@@ -16,14 +16,13 @@ class Critic(object):
     '''
     def _createModel(self):
         stateInputLayer = Input(shape = [self._stateSpaceSize]);
-        state_h1 = Dense(24, activation = "relu")(stateInputLayer);
-        state_h2 = Dense(48)(state_h1);
+        state_h2 = Dense(6, activation = "relu")(stateInputLayer);
 
         actionInputLayer = Input(shape = [self._actionSpaceSize]);
-        action_h1 = Dense(48)(actionInputLayer);
+        action_h1 = Dense(6)(actionInputLayer);
 
         merge = Add()([state_h2, action_h1]);
-        merged_h1 = Dense(24, activation = "relu")(merge);
+        merged_h1 = Dense(12, activation = "relu")(merge);
         outputLayer = Dense(1, activation = "relu")(merged_h1);
 
         inputLayer = [stateInputLayer, actionInputLayer];

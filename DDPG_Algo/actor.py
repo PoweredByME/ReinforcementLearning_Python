@@ -15,9 +15,8 @@ class Actor(object):
     '''
     def _createModel(self):
         inputLayer = Input(shape = [self._stateSpaceSize]);
-        h = Dense(24, activation = "relu")(inputLayer);
-        h = Dense(48, activation = "relu")(h);
-        h = Dense(24, activation = "relu")(h);
+        h = Dense(6, activation = "relu")(inputLayer);
+        h = Dense(12, activation = "relu")(h);
         outputLayer = Dense(self._actionSpaceSize, activation = "relu")(h);
 
         model = Model(inputs = inputLayer, outputs = outputLayer);
@@ -30,7 +29,7 @@ class Actor(object):
     def __init__(self,
                 stateSpaceSize,
                 actionSpaceSize,
-                learningRate = 0.01,
+                learningRate = 0.001,
     ):
         self._stateSpaceSize = stateSpaceSize;
         self._actionSpaceSize = actionSpaceSize;

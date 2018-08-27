@@ -2,10 +2,10 @@ import gym;
 from ddpg import DDPG as Agent;
 from actor import Actor;
 from critic import Critic;
+import time;
 
-
-EPISODES = 200;
-STEPS_PER_EPISODE = 100;
+EPISODES = 500;
+STEPS_PER_EPISODE = 200;
 
 def main():
     env = gym.make("Pendulum-v0");
@@ -24,6 +24,7 @@ def main():
         totalReward = 0.0;
         s = env.reset();
         a = env.action_space.sample();
+        t_start = time.time();
         for _ in range(STEPS_PER_EPISODE):
             #env.render();
             # reshape the state "s" for Agent's model.
@@ -42,8 +43,9 @@ def main():
 
             if _ == int(STEPS_PER_EPISODE/2):
                 agent.updateTargetModels();
-        print "Average Reward = " + str(totalReward / STEPS_PER_EPISODE);
-
+        print "Total Reward = " + str(totalReward);
+        t_end = time.time();
+        print "Time elapsed = " + str(- t_start + t_end) + "seconds"
 
 if __name__ == "__main__":
     main();

@@ -18,7 +18,7 @@ class DDPG(object):
                 trainingBatchSize = 64,
                 epsilon = 0.1,
                 epsilonDecay = 0.95,
-                gamma = 0.1
+                gamma = 0.99
     ):
 
         # init a tensorflow and keras backend session
@@ -116,6 +116,9 @@ class DDPG(object):
 
     def _trainCritic(self, samples):
         c = 0;
+        #stateBatch = [];
+        #actionBatch = [];
+        #rewardBatch = [];
         for sample in samples:
             s, a, r, s1, done = sample;
             if not done:
@@ -125,7 +128,12 @@ class DDPG(object):
             c += 1;
             verbose = 0;
             if c == len(samples): verbose = 0;
-            self._criticModel.fit([s,a],r,verbose = verbose);
+            #stateBatch.append(s);
+            #actionBatch.append(a);
+            #rewardBatch.append(r);
+            self._criticModel.fit(  x = [s,a],
+                                y = r,
+                                verbose = verbose);
 
     def train(self):
         if len(self._replayBuffer) < self._trainingBatchSize:
