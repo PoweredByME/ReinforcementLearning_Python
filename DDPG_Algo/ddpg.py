@@ -34,6 +34,7 @@ class DDPG(object):
         self._replayBufferSize = replayBufferSize;
         self._trainingBatchSize = trainingBatchSize;
         self._gamma = gamma;
+        self._tau = tau;
 
         # init replay memory buffer
         self._replayBuffer = deque(maxlen = replayBufferSize);
