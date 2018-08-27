@@ -181,6 +181,7 @@ def main():
 
 	cur_state = env.reset()
 	action = env.action_space.sample()
+	t = 0.0;
 	while True:
 		env.render()
 		cur_state = cur_state.reshape((1, env.observation_space.shape[0]))
@@ -192,8 +193,9 @@ def main():
 
 		actor_critic.remember(cur_state, action, reward, new_state, done)
 		actor_critic.train()
-
 		cur_state = new_state
+
+		print reward;
 
 if __name__ == "__main__":
 	main()
